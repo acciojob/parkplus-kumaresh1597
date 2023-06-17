@@ -15,8 +15,8 @@ public class ParkingLotController {
 
     //findById and deleteById should be used wherever necessary
     //findAll should never be used
-    @Autowired
-    ParkingLotServiceImpl parkingLotService;
+    //@Autowired
+    ParkingLotServiceImpl parkingLotService = new ParkingLotServiceImpl();
 
     @PostMapping("/add")
     public ResponseEntity<ParkingLot> addParkingLot(@RequestParam String name, @RequestParam String address) {
