@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -23,6 +24,46 @@ public class ReservationServiceImpl implements ReservationService {
     ParkingLotRepository parkingLotRepository3;
     @Override
     public Reservation reserveSpot(Integer userId, Integer parkingLotId, Integer timeInHours, Integer numberOfWheels) throws Exception {
+        Optional<User> optionalUser = userRepository3.findById(userId);
+        Optional<ParkingLot> optionalParkingLot = parkingLotRepository3.findById(parkingLotId);
+        if(!optionalUser.isPresent() || !optionalParkingLot.isPresent()){
+            throw new Exception("Cannot make reservation");
+        }
+        User user = optionalUser.get();
+        ParkingLot parkingLot = optionalParkingLot.get();
 
+        Spot spot = null;
+        List<Spot> spotList = parkingLot.getSpotList();
+        for(Spot sp : spotList){
+            if(numberOfWheels <= 2 && sp.getSpotType().equals(SpotType.TWO_WHEELER) && !sp.isOccupied()){
+                sp.setOccupied(true);
+                spot = sp;
+                break;
+            } else if (numberOfWheels <= 4 && sp.getSpotType().equals(SpotType.FOUR_WHEELER) && !sp.isOccupied()) {
+                sp.setOccupied(true);
+                spot = sp;
+                break;
+            } else if(!sp.isOccupied()){
+                spot = sp;
+            }
+        }
+        if(spot == null){
+            throw new Exception("Cannot make reservation");
+        }
+        Reservation reservation = new Reservation();
+        reservation.setNoOfHours(timeInHours);
+
+        reservation.setUser(user);
+        reservation.setSpot(spot);
+
+        reservationRepository3.save(reservation);
+
+        spot.getReservationList().add(reservation);
+        spotRepository3.save(spot);
+
+        user.getReservationList().add(reservation);
+        userRepository3.save(user);
+
+        return reservation;
     }
 }
