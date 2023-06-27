@@ -51,7 +51,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new Exception("Cannot make reservation");
         }
         Reservation reservation = new Reservation();
-        reservation.setNumberOfHours(timeInHours);
+        reservation.setNoOfHours(timeInHours);
 
         reservation.setUser(user);
         reservation.setSpot(spot);
