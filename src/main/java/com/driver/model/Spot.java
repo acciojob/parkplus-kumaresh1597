@@ -13,14 +13,14 @@ public class Spot {
     @Enumerated(EnumType.STRING)
     private SpotType spotType;
     private int pricePerHour;
-    private boolean isOccupied;
+    private boolean Occupied;
 
     @ManyToOne
     @JoinColumn
     private ParkingLot parkingLot;
 
     @OneToMany(mappedBy = "spot",cascade = CascadeType.ALL)
-    private List<Reservation> reservationList;
+    private List<Reservation> reservationList = new ArrayList<>();
 
     public Spot() {
     }
@@ -65,11 +65,10 @@ public class Spot {
         this.pricePerHour = pricePerHour;
     }
 
-    public boolean isOccupied() {
-        return isOccupied;
+    public boolean getOccupied() {
+        return Occupied;
     }
-
     public void setOccupied(boolean occupied) {
-        isOccupied = occupied;
+        Occupied = occupied;
     }
 }

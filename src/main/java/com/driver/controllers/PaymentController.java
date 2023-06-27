@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/payment")
 public class PaymentController {
 	
-	//@Autowired
-    PaymentServiceImpl paymentService = new PaymentServiceImpl();
+	@Autowired
+    PaymentServiceImpl paymentService;
 
     @PostMapping("/pay")
     public Payment pay(@RequestParam Integer reservationId, @RequestParam Integer amountSent, @RequestParam String mode) throws Exception{
