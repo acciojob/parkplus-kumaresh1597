@@ -23,37 +23,25 @@ public class PaymentServiceImpl implements PaymentService {
         int price = reservation.getSpot().getPricePerHour();
         int bill = hrs * price;
 
-        if(amountSent < bill) throw new Exception("Insufficient Amount");
+        if(mode.equalsIgnoreCase("cash") || mode.equalsIgnoreCase("card") || mode.equalsIgnoreCase("upi")) {
+            if(amountSent!=bill) throw new Exception("Insufficient Amount");
+            Payment payment = new Payment();
+            PaymentMode paymentMode;
+            if (mode.equalsIgnoreCase("cash")) paymentMode = PaymentMode.CASH;
+            else if (mode.equalsIgnoreCase("card")) paymentMode = PaymentMode.CARD;
+            else paymentMode = PaymentMode.UPI;
+            payment.setPaymentMode(paymentMode);
+            payment.setPaymentCompleted(Boolean.TRUE);
+            reservation.getSpot().setOccupied(Boolean.FALSE);
+            payment.setReservation(reservation);
 
-        boolean isCard = PaymentMode.CARD.name().equalsIgnoreCase(mode);
-        boolean isUPI = PaymentMode.UPI.name().equalsIgnoreCase(mode);
-        boolean isCash = PaymentMode.CASH.name().equalsIgnoreCase(mode);
+            reservation.setPayment(payment);
 
-        if(!isCard && !isCash && !isUPI){
+            reservationRepository2.save(reservation);
+            return payment;
+        }
+        else {
             throw new Exception("Payment mode not detected");
         }
-
-
-        Payment newPayment = new Payment();
-
-        if(isCard) {
-            newPayment.setPaymentMode(PaymentMode.CARD);
-        }
-        else if (isUPI){
-            newPayment.setPaymentMode(PaymentMode.UPI);
-        }
-        else if (isCash) {
-            newPayment.setPaymentMode(PaymentMode.CASH);
-        }
-
-        newPayment.setPaymentCompleted(true);
-        newPayment.setReservation(reservation);
-
-        paymentRepository2.save(newPayment);
-
-        reservation.setPayment(newPayment);
-        reservationRepository2.save(reservation);
-
-        return newPayment;
     }
 }
